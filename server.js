@@ -59,7 +59,7 @@ const express = require('express');
             const now = new Date();
             const dateTimeString = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT');
 
-            console.log(`Utente loggato: ${username} il ${dateTimeString} dall'IP: ${userIP}`);
+            console.log(`Login effettua: ${username} il ${dateTimeString} dall'IP: ${userIP}`);
 
             res.json({
                 token,
@@ -300,60 +300,64 @@ app.delete('/api/permessi/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.listen(PORT, '127.0.0.1', async () => {
-        const platform = os.platform();
-        const arch = os.arch();
-        const nodeVersion = process.version;
-        const memoryUsage = process.memoryUsage();
-        const heapUsed = Math.round(memoryUsage.heapUsed / (1024 * 1024));
+// Aggiungere alla fine di server.js prima di app.listen
 
-        console.clear();
-        console.log(``)
-        console.log(`
+// Endpoint per le statistiche settimanali/mensili
+app.get('/api/statistics', authenticateToken, async (req, res) => {
+    try {
+        const { period } = req.query; // 'weekly' o 'monthly'
 
-                                                                             
- ,-----.,--.          ,--.                  ,-----.,--.               ,--.   
-'  .--./\`--',--.  ,--.\`--' ,---. ,---.     '  .--./|  ,---.  ,--,--.,-'  '-. 
-|  |    ,--. \\  \`'  / ,--.| .--'| .-. |    |  |    |  .-.  |' ,-.  |'-.  .-' 
-'  '--'\\|  |  \\    /  |  |\\ \`--.' '-' '    '  '--'\\|  | |  |\\ '-'  |  |  |   
- \`-----'\`--'   \`--'   \`--' \`---' \`---'      \`-----'\`--' \`--' \`--\`--'  \`--'   
-                                                                             
-
-`);
-        console.log(`Civico Chat Server - Versione 1.0`);
-        console.log(``)
-        for (let i = 0; i < 10; i++) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-            console.log(`By VincenzoT`);
+        let query;
+        if (period === 'weekly') {
+            query = `
+                SELECT 
+                    YEARWEEK(shift_date, 1) as week_num,
+                    CONCAT(DATE_FORMAT(MIN(shift_date), '%d/%m/%Y'), ' - ', DATE_FORMAT(MAX(shift_date), '%d/%m/%Y')) as week_range,
+                    COUNT(*) as total_shifts,
+                    SUM(TIME_TO_SEC(TIMEDIFF(end_time, start_time))/3600) as total_hours,
+                    COUNT(DISTINCT volunteer) as unique_volunteers,
+                    service,
+                    ROUND(AVG(TIME_TO_SEC(TIMEDIFF(end_time, start_time))/3600), 1) as avg_shift_hours
+                FROM shifts
+                WHERE shift_date >= DATE_SUB(CURDATE(), INTERVAL 4 WEEK)
+                GROUP BY YEARWEEK(shift_date, 1), service
+                ORDER BY week_num DESC, service
+            `;
+        } else {
+            query = `
+                SELECT 
+                    YEAR(shift_date) as year,
+                    MONTH(shift_date) as month,
+                    DATE_FORMAT(shift_date, '%m/%Y') as month_name,
+                    COUNT(*) as total_shifts,
+                    SUM(TIME_TO_SEC(TIMEDIFF(end_time, start_time))/3600) as total_hours,
+                    COUNT(DISTINCT volunteer) as unique_volunteers,
+                    service,
+                    ROUND(AVG(TIME_TO_SEC(TIMEDIFF(end_time, start_time))/3600), 1) as avg_shift_hours
+                FROM shifts
+                WHERE shift_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+                GROUP BY YEAR(shift_date), MONTH(shift_date), service
+                ORDER BY year DESC, month DESC, service
+            `;
         }
-        await new Promise(resolve => setTimeout(resolve, 5000));
 
-        console.clear();
-        console.log(`
-                                                                             
- ,-----.,--.          ,--.                  ,-----.,--.               ,--.   
-'  .--./\`--',--.  ,--.\`--' ,---. ,---.     '  .--./|  ,---.  ,--,--.,-'  '-. 
-|  |    ,--. \\  \`'  / ,--.| .--'| .-. |    |  |    |  .-.  |' ,-.  |'-.  .-' 
-'  '--'\\|  |  \\    /  |  |\\ \`--.' '-' '    '  '--'\\|  | |  |\\ '-'  |  |  |   
- \`-----'\`--'   \`--'   \`--' \`---' \`---'      \`-----'\`--' \`--' \`--\`--'  \`--'   
-                                                                             
+        const [rows] = await pool.query(query);
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
 
-`);
-        console.log(``);
-        console.log(`=======================================================================`);
-        console.log(``);
-        console.log(`Server avviato sulla porta ${PORT}`);
-        console.log(`OS: ${platform} (${arch})`);
-        console.log(`Node.js: ${nodeVersion}`);
-        console.log(`Memoria utilizzata: ${heapUsed}MB`);
-        console.log(`Server avviato alle: ${new Date().toLocaleString('it-IT')}`);
-        console.log(`Hostname: ${os.hostname()}`);
-        console.log(``);
-        console.log(`CivicoChat By VincenzoT`);
-        console.log(`SCU 2025/2026`);
-        console.log(``);
-        console.log(`=======================================================================`);
-        console.log(``);
-        console.log(``)
-        console.log(`======LOGS======`);
-    });
+app.listen(PORT, '127.0.0.1', async () => {
+    console.log(`Server avviato su http://127.0.0.1:${PORT}`);
+
+    try {
+        // Verifica connessione al database
+        const connection = await pool.getConnection();
+        console.log('Connessione al database stabilita con successo');
+        connection.release();
+    } catch (error) {
+        console.error('Errore di connessione al database:', error);
+    }
+});

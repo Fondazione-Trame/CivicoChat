@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="home.css" />
 </head>
 <body>
+<div id="loadingIndicator"></div>
 <header>
     <div class="logo">
         <img src="img/logo.png" alt="Logo CivicoChat"/>
@@ -22,6 +23,7 @@
     <div class="tab" onclick="showTab('aggiungi')">➕ Aggiungi Turno</div>
     <div class="tab" onclick="showTab('lista')">📋 Lista Turni</div>
     <div class="tab" onclick="showTab('permessi')">🛂 Permessi</div>
+    <div class="tab" onclick="showTab('statistiche')">📊 Statistiche</div>
     <div class="tab" onclick="showTab('chat')">💬 Chat</div>
 </nav>
 
@@ -139,6 +141,35 @@
             <textarea id="messageText" placeholder="Scrivi un messaggio..." rows="1"></textarea>
             <button onclick="sendMessage()">➤</button>
         </div>
+    </div>
+</div>
+
+<!-- ... Altri contenuti ... -->
+
+<!-- Aggiungi questa sezione prima della chiusura del body -->
+<div id="statistiche" class="content-section" style="display: none;">
+    <h2>📊 Statistiche Turni</h2>
+    <div class="stats-controls">
+        <button class="stats-btn active" onclick="loadStatistics('weekly')">Settimanale</button>
+        <button class="stats-btn" onclick="loadStatistics('monthly')">Mensile</button>
+    </div>
+    <div class="stats-container">
+        <div class="stats-summary">
+            <div class="stats-card">
+                <h3>Totale Turni</h3>
+                <p id="totalTurni">-</p>
+            </div>
+            <div class="stats-card">
+                <h3>Ore Totali</h3>
+                <p id="totalOre">-</p>
+            </div>
+            <div class="stats-card">
+                <h3>Operatori</h3>
+                <p id="totalOperatori">-</p>
+            </div>
+        </div>
+        <div id="statisticsTable" class="stats-table-container"></div>
+        <div id="statisticsChart" class="stats-chart-container"></div>
     </div>
 </div>
 
