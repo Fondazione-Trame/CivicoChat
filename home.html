@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CivicoChat</title>
+    <link rel="stylesheet" href="home.css" />
+</head>
+<body>
+<header>
+    <div class="logo">
+        <img src="img/logo.png" alt="Logo CivicoChat"/>
+    </div>
+    <div class="user-info">
+        <span id="loggedUserDisplay">👤 Benvenuto</span>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+</header>
+
+<nav>
+    <div class="tab" onclick="showTab('calendario')">📅 Calendario</div>
+    <div class="tab" onclick="showTab('aggiungi')">➕ Aggiungi Turno</div>
+    <div class="tab" onclick="showTab('lista')">📋 Lista Turni</div>
+    <div class="tab" onclick="showTab('permessi')">🛂 Permessi</div>
+    <div class="tab" onclick="showTab('chat')">💬 Chat</div>
+</nav>
+
+<div id="calendario" class="content-section">
+    <h2>📅 Calendario Turni</h2>
+    <div class="calendar-controls">
+        <button onclick="prevMonth()">◀️</button>
+        <h3 id="currentMonth">Mese</h3>
+        <button onclick="nextMonth()">▶️</button>
+    </div>
+    <div id="calendar"></div>
+</div>
+
+<div id="aggiungi" class="content-section" style="display: none;">
+    <h2>➕ Aggiungi Turno</h2>
+    <form id="turnoForm">
+        <div class="form-group">
+            <label for="volontario">Operatore:</label>
+            <input type="text" id="volontario" required />
+        </div>
+        <div class="form-group">
+            <label for="servizio">Servizio:</label>
+            <select id="servizio" required>
+                <option value="ALA">SCU ALA</option>
+                <option value="TRAME">SCU TRAME</option>
+                <option value="SEGRETERIA">SEGRETERIA</option>
+                <option value="ALTRO">ALTRO</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="data">Data:</label>
+            <input type="date" id="data" required />
+        </div>
+        <div class="form-group">
+            <label for="oraInizio">Ora inizio:</label>
+            <input type="time" id="oraInizio" required />
+        </div>
+        <div class="form-group">
+            <label for="oraFine">Ora fine:</label>
+            <input type="time" id="oraFine" required />
+        </div>
+        <div class="form-group">
+            <label for="attivita">Attività:</label>
+            <textarea id="attivita" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="note">Note:</label>
+            <textarea id="note" rows="3"></textarea>
+        </div>
+        <button type="submit">💾 Salva Turno</button>
+    </form>
+</div>
+
+<div id="lista" class="content-section" style="display: none;">
+    <h2>📋 Lista Turni</h2>
+    <div class="filter-controls">
+        <input type="text" id="filterVolontario" placeholder="Filtra per operatore..." />
+        <select id="filterServizio">
+            <option value="">TUTTI</option>
+            <option value="ALA">SCU ALA</option>
+            <option value="TRAME">SCU TRAME</option>
+            <option value="SEGRETERIA">SEGRETERIA</option>
+            <option value="ALTRO">ALTRO</option>
+        </select>
+        <input type="month" id="filterMese" />
+        <button onclick="resetFilters()">🔄 Reset</button>
+    </div>
+    <div class="turni-container" id="turniList"></div>
+</div>
+
+<div id="turnoModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div id="turnoDetails"></div>
+    </div>
+</div>
+<div id="permessi" class="content-section" style="display: none;">
+    <h2>🛂 Gestione Permessi</h2>
+    <div class="filter-controls">
+        <button onclick="showTab('nuovoPermesso')">➕ Richiedi nuovo permesso</button>
+    </div>
+    <div class="permessi-container" id="permessiList"></div>
+</div>
+
+<div id="nuovoPermesso" class="content-section" style="display: none;">
+    <h2>➕ Richiedi Permesso</h2>
+    <form id="permessoForm">
+        <div class="form-group">
+            <label for="tipoPermesso">Tipo di permesso:</label>
+            <select id="tipoPermesso" required>
+                <option value="ORDINARIO">Ordinario</option>
+                <option value="STRAORDINARIO">Straordinario</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="dataInizio">Data inizio:</label>
+            <input type="date" id="dataInizio" required />
+        </div>
+        <div class="form-group">
+            <label for="dataFine">Data fine:</label>
+            <input type="date" id="dataFine" required />
+        </div>
+        <div class="form-group">
+            <label for="motivoPermesso">Motivo della richiesta:</label>
+            <textarea id="motivoPermesso" rows="3"></textarea>
+        </div>
+        <button type="submit">📤 Invia Richiesta</button>
+    </form>
+</div>
+<div id="chat" class="content-section" style="display: none;">
+    <h2>💬 Chat</h2>
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <textarea id="messageText" placeholder="Scrivi un messaggio..." rows="1"></textarea>
+            <button onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+</div>
+
+<script src="index.js"></script>
+</body>
+</html>
