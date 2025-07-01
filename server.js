@@ -59,7 +59,7 @@ const express = require('express');
             const now = new Date();
             const dateTimeString = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT');
 
-            console.log(`Login effettua: ${username} il ${dateTimeString} dall'IP: ${userIP}`);
+            console.log(`Utente loggato: ${username} il ${dateTimeString} dall'IP: ${userIP}`);
 
             res.json({
                 token,
@@ -350,14 +350,60 @@ app.get('/api/statistics', authenticateToken, async (req, res) => {
 });
 
 app.listen(PORT, '127.0.0.1', async () => {
-    console.log(`Server avviato su http://127.0.0.1:${PORT}`);
+        const platform = os.platform();
+        const arch = os.arch();
+        const nodeVersion = process.version;
+        const memoryUsage = process.memoryUsage();
+        const heapUsed = Math.round(memoryUsage.heapUsed / (1024 * 1024));
 
-    try {
-        // Verifica connessione al database
-        const connection = await pool.getConnection();
-        console.log('Connessione al database stabilita con successo');
-        connection.release();
-    } catch (error) {
-        console.error('Errore di connessione al database:', error);
-    }
-});
+        console.clear();
+        console.log(``)
+        console.log(`
+
+                                                                             
+ ,-----.,--.          ,--.                  ,-----.,--.               ,--.   
+'  .--./\`--',--.  ,--.\`--' ,---. ,---.     '  .--./|  ,---.  ,--,--.,-'  '-. 
+|  |    ,--. \\  \`'  / ,--.| .--'| .-. |    |  |    |  .-.  |' ,-.  |'-.  .-' 
+'  '--'\\|  |  \\    /  |  |\\ \`--.' '-' '    '  '--'\\|  | |  |\\ '-'  |  |  |   
+ \`-----'\`--'   \`--'   \`--' \`---' \`---'      \`-----'\`--' \`--' \`--\`--'  \`--'   
+                                                                             
+
+`);
+        console.log(`Civico Chat Server - Versione 1.0`);
+        console.log(``)
+        for (let i = 0; i < 10; i++) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            console.log(`By VincenzoT`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        console.clear();
+        console.log(`
+                                                                             
+ ,-----.,--.          ,--.                  ,-----.,--.               ,--.   
+'  .--./\`--',--.  ,--.\`--' ,---. ,---.     '  .--./|  ,---.  ,--,--.,-'  '-. 
+|  |    ,--. \\  \`'  / ,--.| .--'| .-. |    |  |    |  .-.  |' ,-.  |'-.  .-' 
+'  '--'\\|  |  \\    /  |  |\\ \`--.' '-' '    '  '--'\\|  | |  |\\ '-'  |  |  |   
+ \`-----'\`--'   \`--'   \`--' \`---' \`---'      \`-----'\`--' \`--' \`--\`--'  \`--'   
+                                                                             
+
+`);
+        console.log(``);
+        console.log(`=======================================================================`);
+        console.log(``);
+        console.log(`Server avviato sulla porta ${PORT}`);
+        console.log(`OS: ${platform} (${arch})`);
+        console.log(`Node.js: ${nodeVersion}`);
+        console.log(`Memoria utilizzata: ${heapUsed}MB`);
+        console.log(`Server avviato alle: ${new Date().toLocaleString('it-IT')}`);
+        console.log(`Hostname: ${os.hostname()}`);
+        console.log(``);
+        console.log(`CivicoChat By VincenzoT`);
+        console.log(`Per problemi conttattare 3398659697`);
+        console.log(`SCU 2025/2026`);
+        console.log(``);
+        console.log(`=======================================================================`);
+        console.log(``);
+        console.log(``)
+        console.log(`======LOGS======`);
+    });

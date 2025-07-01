@@ -1,4 +1,3 @@
-
 :root {
   /* Colori primari di tutte le pagine */
   --primary: #5e6ad2;
@@ -1037,4 +1036,51 @@ td.selected-day {
 }
 
 .turno-item.altro {
-  border-left-color: var(--altro);}
+  border-left-color: var(--altro);
+  background-color: rgba(241, 0, 255, 0.05);
+}
+
+.turno-volontario {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.turno-orario {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.turno-servizio-badge {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: var(--radius-sm);
+}
+
+.turno-item.ala .turno-servizio-badge {
+  background-color: var(--ala);
+  color: white;
+}
+
+.turno-item.trame .turno-servizio-badge {
+  background-color: var(--trame);
+  color: white;
+}
+
+.turno-item.segreteria .turno-servizio-badge {
+  background-color: var(--segreteria);
+  color: white;
+}
+
+.turno-item.altro .turno-servizio-badge {
+  background-color: var(--altro);
+  color: white;
+}
+
+.no-turni {
+  color: var(--text-tertiary);
+  font-style: italic;
+}
