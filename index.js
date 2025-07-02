@@ -28,7 +28,7 @@ async function fetchAPI(endpoint, options = {}) {
     }
 }
 
-// Modifica alla funzione generateCalendar per rendere tutti i giorni cliccabili aaaaaaaaaaaaaaa
+// Modifica alla funzione generateCalendar per rendere tutti i giorni cliccabili
 function generateCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -564,49 +564,7 @@ function resetFilters() {
     aggiornaTurniLista();
 }
 
-// Funzione per aggiungere pulsanti rapidi al form del turno
-function addQuickTimeButtons() {
-    const timeButtons = [
-        { label: 'Mattina (9-13)', start: '09:00', end: '13:00' },
-        { label: 'Pomeriggio (15:30-19:30)', start: '15:30', end: '19:30' }
-    ];
-
-    const turnoForm = document.getElementById('turnoForm');
-    const oraInizioField = document.getElementById('oraInizio');
-    const oraFineField = document.getElementById('oraFine');
-
-    if (!oraInizioField || !oraFineField || !turnoForm) return;
-
-    // Crea un container per i pulsanti rapidi
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'quick-time-buttons';
-    buttonContainer.style.marginBottom = '15px';
-    buttonContainer.style.display = 'flex';
-    buttonContainer.style.gap = '8px';
-    buttonContainer.style.flexWrap = 'wrap';
-
-    timeButtons.forEach(btn => {
-        // Pulsante per il turno
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = btn.label;
-        button.style.fontSize = '0.85rem';
-        button.style.padding = '4px 8px';
-
-        button.addEventListener('click', () => {
-            oraInizioField.value = btn.start;
-            oraFineField.value = btn.end;
-        });
-
-        // Aggiungi i pulsanti al container
-        buttonContainer.appendChild(button);
-    });
-
-    // Inserisci il container dopo il campo oraInizio
-    oraInizioField.parentNode.insertAdjacentElement('afterend', buttonContainer);
-}
-
-// Aggiungi il gestore del form per l'invio dei turni
+// Inizializzazione dei form
 document.addEventListener('DOMContentLoaded', function() {
     const turnoForm = document.getElementById('turnoForm');
     if (turnoForm) {
@@ -625,12 +583,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 await aggiungiTurno(turno);
+                alert('Turno aggiunto con successo!');
+                turnoForm.reset();
                 await caricaDati();
                 showTab('calendario');
-                alert('Turno aggiunto con successo!');
-                this.reset();
             } catch (error) {
                 alert('Errore nell\'aggiunta del turno: ' + (error.message || 'Riprova più tardi.'));
+            }
+        });
+    }
+
+    // Gestione permessi form se esiste
+    const permessoForm = document.getElementById('permessoForm');
+    if (permessoForm) {
+        permessoForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const permesso = {
+                tipo: document.getElementById('tipoPermesso').value,
+                data_inizio: document.getElementById('dataInizio').value,
+                data_fine: document.getElementById('dataFine').value,
+                motivo: document.getElementById('motivoPermesso').value
+            };
+
+            try {
+                await richiediPermesso(permesso);
+                alert('Permesso richiesto con successo!');
+                permessoForm.reset();
+                showTab('permessi');
+                await aggiornaPermessiLista();
+            } catch (error) {
+                alert('Errore nella richiesta del permesso: ' + (error.message || 'Riprova più tardi.'));
             }
         });
     }
@@ -842,5 +825,79 @@ async function inviaMessaggio(content) {
     return await fetchAPI('/messages', {
         method: 'POST',
         body: JSON.stringify({ content })
+    });
+}
+
+// Funzione per aggiungere pulsanti rapidi al form del turno
+function addQuickTimeButtons() {
+    const timeButtons = [
+        { label: 'Mattina (8-14)', start: '08:00', end: '14:00' },
+        { label: 'Pomeriggio (14-20)', start: '14:00', end: '20:00' },
+        { label: 'Giornata intera (8-20)', start: '08:00', end: '20:00' }
+    ];
+
+    const oraInizioField = document.getElementById('oraInizio');
+    const oraFineField = document.getElementById('oraFine');
+
+    if (!oraInizioField || !oraFineField) return;
+
+    // Crea un container per i pulsanti rapidi
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'quick-time-buttons';
+    buttonContainer.style.marginBottom = '15px';
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.gap = '8px';
+    buttonContainer.style.flexWrap = 'wrap';
+
+    timeButtons.forEach(btn => {
+    // Pulsante per il turno mattutino (9:00 - 13:00)
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = btn.label;
+        button.style.fontSize = '0.85rem';
+        button.style.padding = '4px 8px';
+
+        button.addEventListener('click', () => {
+            oraInizioField.value = btn.start;
+            oraFineField.value = btn.end;
+        });
+
+    // Aggiungi i pulsanti al container
+        buttonContainer.appendChild(button);
+    });
+
+    // Inserisci il container dopo il campo oraInizio
+    oraInizioField.parentNode.insertAdjacentElement('afterend', buttonContainer);
+}
+    const timeFieldGroup = document.querySelector('#turnoForm .form-group:nth-child(4)');
+    if (timeFieldGroup) {
+        turnoForm.insertBefore(quickButtonsDiv, timeFieldGroup);
+    } else {
+        turnoForm.prepend(quickButtonsDiv);
+    }
+// Aggiungi il gestore del form per l'invio dei turni
+if (document.getElementById('turnoForm')) {
+    document.getElementById('turnoForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const turno = {
+            volontario: document.getElementById('volontario').value,
+            servizio: document.getElementById('servizio').value,
+            data: document.getElementById('data').value,
+            oraInizio: document.getElementById('oraInizio').value,
+            oraFine: document.getElementById('oraFine').value,
+            attivita: document.getElementById('attivita').value,
+            note: document.getElementById('note').value
+        };
+
+        try {
+            await aggiungiTurno(turno);
+            await caricaDati();
+            showTab('calendario');
+            alert('Turno aggiunto con successo!');
+            this.reset();
+        } catch (error) {
+            alert('Errore nell\'aggiunta del turno: ' + (error.message || 'Riprova più tardi.'));
+        }
     });
 }
