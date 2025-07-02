@@ -29,7 +29,7 @@ async function fetchAPI(endpoint, options = {}) {
     }
 }
 
-// Modifica alla funzione generateCalendar per rendere tutti i giorni cliccabili
+// Modifica alla funzione generateCalendar per rendere tutti i giorni cliccabili aaaaaaaaaaaaaaa
 function generateCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
